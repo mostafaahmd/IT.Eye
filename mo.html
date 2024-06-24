@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRIUMPH Data Form</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 300px;
+  }
+  .logo {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .form-input {
+    margin-bottom: 10px;
+  }
+  input[type="text"], input[type="tel"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    display: block;
+  }
+  .button-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  #print { background-color: #4CAF50; }
+  #clear { background-color: #f44336; }
+  #export { background-color: #008CBA; }
+</style>
+</head>
+<body>
+  <div class="container">
+  <div class="logo">
+  </div>
+  <h1>Eye Advertising</h1>
+  <form id="dataForm">
+    <div class="form-input">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name">
+    </div>
+    <div class="form-input">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email">
+    </div>
+    <div class="form-input">
+      <label for="mobile">Mobile Number:</label>
+      <input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number">
+    </div>
+    <div class="form-input">
+      <label for="specialty">Specialty:</label>
+      <select id="specialty" name="specialty">
+        <option value="designer">Designer</option>
+        <option value="developer">Developer</option>
+        <option value="manager">Manager</option>
+        <option value="IT">IT</option>
+      </select>
+    </div>
+    <button type="button" id="print" class="button">Print</button>
+    <button type="reset" id="clear" class="button">Clear</button>
+    <button type="button" id="export" class="button">Export to Excel</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+<script>
+  document.getElementById('export').addEventListener('click', function() {
+    // Retrieve stored data or initialize an empty array
+    var storedData = JSON.parse(localStorage.getItem('formData')) || [];
+    
+    // Add new entry
+    storedData.push({
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      mobile: document.getElementById('mobile').value,
+      specialty: document.getElementById('specialty').value
+    });
+    
+    // Store updated data back into local storage
+    localStorage.setItem('formData', JSON.stringify(storedData));
+    
+    // Create a new workbook and a sheet
+    var wb = XLSX.utils.book_new();
+    var ws_name = "SheetJS";
+    
+    // Include headers
+    var ws_data = [["Name", "Email", "Mobile Number", "Specialty"]];
+    
+    // Add stored data
+    storedData.forEach(function(entry) {
+      ws_data.push([entry.name, entry.email, entry.mobile, entry.specialty]);
+    });
+    
+    // Create a worksheet
+    var ws = XLSX.utils.aoa_to_sheet(ws_data);
+    
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, ws_name);
+    
+    // Export the workbook
+    XLSX.writeFile(wb, "form_data.xlsx");
+  });
+  
+</script>
+</body>
+</html>
